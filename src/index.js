@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises;
 const path = require('path');
-// const { readFile } = require('fs');
+const { funcCrypto } = require('./crypto');
 
 const app = express();
 app.use(bodyParser.json());
@@ -35,3 +35,15 @@ app.get('/talker/:id', async (req, res) => {
   if (!getId) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
   return res.status(200).json(getId);
 });
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  
+  if ([email, password].includes(undefined)) {
+  return res.status(401).json({ message: 'Campos ausentes!' });
+  }
+  
+  const token = funcCrypto();
+  
+  return res.status(200).json({ token });
+  }); 
