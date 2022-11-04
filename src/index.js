@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const fs = require('fs').promises;
 const path = require('path');
 const { funcCrypto } = require('./crypto');
+const validateEmail = require('./middlewares/validateEmail');
+const validatePassword = require('./middlewares/validatePassword');
 
 const app = express();
 app.use(bodyParser.json());
@@ -36,7 +38,7 @@ app.get('/talker/:id', async (req, res) => {
   return res.status(200).json(getId);
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', validateEmail, validatePassword, (req, res) => {
   const { email, password } = req.body;
   
   if ([email, password].includes(undefined)) {
@@ -46,4 +48,4 @@ app.post('/login', (req, res) => {
   const token = funcCrypto();
   
   return res.status(200).json({ token });
-  }); 
+  });
