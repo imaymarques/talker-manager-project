@@ -5,6 +5,12 @@ const path = require('path');
 const { funcCrypto } = require('./crypto');
 const validateEmail = require('./middlewares/validateEmail');
 const validatePassword = require('./middlewares/validatePassword');
+const validateName = require('./middlewares/validateName');
+const validateAge = require('./middlewares/validateAge');
+const validateTalk = require('./middlewares/validateTalk');
+const validateWatchedAt = require('./middlewares/validateWatchedAt');
+const validateRate = require('./middlewares/validateRate');
+const validateAuthorization = require('./middlewares/validateAuthorization');
 
 const app = express();
 app.use(bodyParser.json());
@@ -48,4 +54,16 @@ app.post('/login', validateEmail, validatePassword, (req, res) => {
   const token = funcCrypto();
   
   return res.status(200).json({ token });
-  });
+});
+
+app.post('/talker', validateAuthorization, validateTalk, validateName, validateAge,
+  validateWatchedAt, validateRate, async (req, res) => {
+    const talker = req.body;
+    const info = await fs.readFile(tPath, 'utf-8');
+    const parse = JSON.parse(info);
+    const talkerID = parse[parse.length - 1].id + 1;
+    const newTalkers = { id: talkerID, ...talker };
+    const newFile = [...parse, newTalkers];
+    await fs.writeFile(tPath, JSON.stringify(newFile));
+    return res.status(201).json(newTalkers);
+});
