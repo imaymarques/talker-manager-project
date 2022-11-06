@@ -11,7 +11,7 @@ const validateTalk = require('./middlewares/validateTalk');
 const validateWatchedAt = require('./middlewares/validateWatchedAt');
 const validateRate = require('./middlewares/validateRate');
 const validateAuthorization = require('./middlewares/validateAuthorization');
-const { query } = require('express');
+// const { query } = require('express');
 
 const app = express();
 app.use(bodyParser.json());
@@ -69,12 +69,12 @@ app.post('/talker', validateAuthorization, validateTalk, validateName, validateA
     return res.status(201).json(newTalkers);
 });
 
-app.put('/talker/:id', validateAuthorization, validateName, validateAge, validateTalk,
-  validateWatchedAt, validateRate, async (req, res) => {
-    const { id } = req.params;
-    const talkers = await fs.readFile(tPath, 'utf-8');
-    const data = JSON.parse(talkers);
-  });
+// app.put('/talker/:id', validateAuthorization, validateName, validateAge, validateTalk,
+//   validateWatchedAt, validateRate, async (req, res) => {
+//     const { id } = req.params;
+//     const talkers = await fs.readFile(tPath, 'utf-8');
+//     const data = JSON.parse(talkers);
+//   });
 
 app.delete('/talker/:id', validateAuthorization, async (req, res) => {
   const { id } = req.params;
@@ -85,8 +85,8 @@ app.delete('/talker/:id', validateAuthorization, async (req, res) => {
   return res.sendStatus(204);
 });
 
-app.get('/talker/search', validateAuthorization, async (req, res) => {
-  const { q } = req.query;
-  const info = await fs.readFile(tPath, 'utf-8');
-  const parse = JSON.parse(info);
-})
+// app.get('/talker/search', validateAuthorization, async (req, res) => {
+//   const { q } = req.query;
+//   const info = await fs.readFile(tPath, 'utf-8');
+//   const parse = JSON.parse(info);
+// })
