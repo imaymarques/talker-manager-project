@@ -11,7 +11,7 @@ const validateTalk = require('./middlewares/validateTalk');
 const validateWatchedAt = require('./middlewares/validateWatchedAt');
 const validateRate = require('./middlewares/validateRate');
 const validateAuthorization = require('./middlewares/validateAuthorization');
-// const { query } = require('express');
+// const searchTalkers = require('./helper');
 
 const app = express();
 app.use(bodyParser.json());
@@ -34,6 +34,14 @@ app.get('/talker', async (_req, res) => {
   const talkers = await fs.readFile(tPath, 'utf-8');
   const info = talkers ? JSON.parse(talkers) : [];
   return res.status(200).json(info);
+});
+
+app.get('/talker/search', validateAuthorization, async (req, res) => {
+  const { q } = req.query;
+  const info = await fs.readFile(tPath, 'utf-8');
+  const parse = JSON.parse(info);
+  const talkers = parse.filter((el) => el.name.includes(q));
+  return res.status(200).json(talkers);
 });
 
 app.get('/talker/:id', async (req, res) => {
@@ -69,17 +77,6 @@ app.post('/talker', validateAuthorization, validateTalk, validateName, validateA
     return res.status(201).json(newTalkers);
 });
 
-// app.put('/books/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const booksJson = await fs.readFile(booksFile, 'utf-8');
-//   const books = JSON.parse(booksJson);
-//   const newBooksFile = books
-//     .map((book) => (book.id === id ? { id: book.id, ...req.body } : book));
-//   const response = newBooksFile[id - 1];
-//   await fs.writeFile(booksFile, JSON.stringify(newBooksFile));
-//   res.status(200).json(response);
-// });
-
 app.put('/talker/:id', validateAuthorization, validateName, validateAge, validateTalk,
   validateRate, validateWatchedAt, async (req, res) => {
     const { id } = req.params;
@@ -100,13 +97,3 @@ app.delete('/talker/:id', validateAuthorization, async (req, res) => {
   await fs.writeFile(tPath, JSON.stringify(idFiltered));
   return res.sendStatus(204);
 });
-
-// app.get('/talker/search', validateAuthorization, async (req, res) => {
-//   const { q } = req.query;
-//   const info = await fs.readFile(tPath, 'utf-8');
-//   const parse = JSON.parse(info);
-// })
-
-module.exports = {
-  tPath,
-};
