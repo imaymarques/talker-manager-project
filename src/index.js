@@ -69,12 +69,28 @@ app.post('/talker', validateAuthorization, validateTalk, validateName, validateA
     return res.status(201).json(newTalkers);
 });
 
-// app.put('/talker/:id', validateAuthorization, validateName, validateAge, validateTalk,
-//   validateWatchedAt, validateRate, async (req, res) => {
-//     const { id } = req.params;
-//     const talkers = await fs.readFile(tPath, 'utf-8');
-//     const data = JSON.parse(talkers);
-//   });
+// app.put('/books/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const booksJson = await fs.readFile(booksFile, 'utf-8');
+//   const books = JSON.parse(booksJson);
+//   const newBooksFile = books
+//     .map((book) => (book.id === id ? { id: book.id, ...req.body } : book));
+//   const response = newBooksFile[id - 1];
+//   await fs.writeFile(booksFile, JSON.stringify(newBooksFile));
+//   res.status(200).json(response);
+// });
+
+app.put('/talker/:id', validateAuthorization, validateName, validateAge, validateTalk,
+  validateRate, validateWatchedAt, async (req, res) => {
+    const { id } = req.params;
+    const talkers = await fs.readFile(tPath, 'utf-8');
+    const data = JSON.parse(talkers);
+    const newTalkers = data
+      .map((talker) => (talker.id === Number(id) ? { id: talker.id, ...req.body } : talker));
+    const response = newTalkers[id - 1];
+    await fs.writeFile(tPath, JSON.stringify(newTalkers));
+    res.status(200).json(response);
+  });
 
 app.delete('/talker/:id', validateAuthorization, async (req, res) => {
   const { id } = req.params;
@@ -90,3 +106,7 @@ app.delete('/talker/:id', validateAuthorization, async (req, res) => {
 //   const info = await fs.readFile(tPath, 'utf-8');
 //   const parse = JSON.parse(info);
 // })
+
+module.exports = {
+  tPath,
+};
